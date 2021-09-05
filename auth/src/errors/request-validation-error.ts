@@ -1,3 +1,6 @@
+// this custom error is really for handling erros from express-validator and forming them into the error response
+// structure that we want
+
 import { ValidationError } from 'express-validator';
 import { CustomError } from './custom-error';
 
