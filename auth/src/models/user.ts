@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Password } from '../services/password';
 
 // An interface that describes the properties
 // that are requried to create a new User
@@ -30,6 +31,18 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+// we are defining a piece of mongoose pre middleware
+// we use the function keyword instead of arrow function syntax as within the function we get access to the mongoose document with the
+// this keyword
+userSchema.pre('save', async function (done) {
+  if (this.isModified('password')) {
+    const hashed = await Password.toHash(this.get('password'));
+    this.set('password', hashed);
+  }
+  done();
+});
+
 userSchema.statics.build = (attrs: UserAttrs) => {
   return new User(attrs);
 };
