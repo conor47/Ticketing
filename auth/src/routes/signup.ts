@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
 import { User } from '../models/user';
 import { body, validationResult } from 'express-validator';
@@ -34,6 +35,21 @@ router.post(
 
     const user = User.build({ email, password });
     await user.save();
+    // generate jwt and store it on the session object
+    const userJwt = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      'asdf'
+    );
+
+    // we define the property on the session object in this way as typescript does not like us setting properties using the req.session.jtw
+    // syntax
+    req.session = {
+      jwt: userJwt,
+    };
+
     res.status(201).send(user);
   }
 );
