@@ -36,6 +36,13 @@ app.all('*', async () => {
 app.use(errorHandler);
 
 const start = async () => {
+  // check to ensure that the necessary environment variables have been set. We perform this check here instead of eg in a route , as
+  // these secrets are crtical to the functioning of our application
+
+  if (!process.env.JWT_KEY) {
+    throw new Error('JWT_KEY key must be defined');
+  }
+
   try {
     await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
     console.log('connecting to DB');

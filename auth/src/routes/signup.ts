@@ -41,7 +41,7 @@ router.post(
         id: user.id,
         email: user.email,
       },
-      'asdf'
+      process.env.JWT_KEY!
     );
 
     // we define the property on the session object in this way as typescript does not like us setting properties using the req.session.jtw
