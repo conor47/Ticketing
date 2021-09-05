@@ -1,22 +1,15 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+
+import { currentUser } from '../middlewares/current-user';
 
 // route for handling client requests to check if a user is authenticated
 
 const router = express.Router();
 
-router.get('/api/users/currentuser', (req, res) => {
+router.get('/api/users/currentuser', currentUser, (req, res) => {
   // below conditional is equivalent to if(!req.session || !req.session.jwt)
-  if (!req.session?.jwt) {
-    return res.send({ currentUser: null });
-  }
 
-  try {
-    const payload = jwt.verify(req.session.jwt, process.env.JWT_KEY!);
-    res.send({ currentUser: payload });
-  } catch (error) {
-    res.send({ currentuser: null });
-  }
+  res.send({ currentUser: req.currentUser || null });
 });
 
 export { router as currentUserRouter };
