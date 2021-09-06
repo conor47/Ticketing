@@ -1,3 +1,5 @@
+// The purpose of this file is for configuring our express server. The server is not started herer
+
 import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
