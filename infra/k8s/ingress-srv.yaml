@@ -10,10 +10,18 @@ spec:
     - host: ticketing.dev
       http:
         paths:
+          # ingress attemps to match this array of paths in order. The order is important. The most general should be last
           - path: /api/users/?(.*)
             pathType: Prefix
             backend:
               service:
                 name: auth-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv
                 port:
                   number: 3000
