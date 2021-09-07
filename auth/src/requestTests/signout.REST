@@ -1,2 +1,0 @@
-POST https://ticketing.dev/api/users/signout
-Content-Type: application/json
