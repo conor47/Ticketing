@@ -6,13 +6,15 @@ import { app } from '../app';
 let mongo: any;
 // Hook function that runs before all of our tests
 beforeAll(async () => {
-  mongo = new MongoMemoryServer();
-  const mongoUri = await mongo.getUri();
+  // this may not be the best approach but we must set our environment variables when testing
+  process.env.JWT_KEY = 'asdasfkn';
+  mongo = await MongoMemoryServer.create();
+  const mongoUri = mongo.getUri();
 
   await mongoose.connect(mongoUri);
 });
 
-// Hook function that runs before each
+// Hook function that runs before each test`
 beforeEach(async () => {
   const collections = await mongoose.connection.db.collections();
 
