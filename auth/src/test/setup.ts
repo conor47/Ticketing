@@ -1,7 +1,11 @@
+import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-
 import { app } from '../app';
+
+declare global {
+  var signin: () => Promise<string[]>;
+}
 
 let mongo: any;
 // Hook function that runs before all of our tests
@@ -28,3 +32,17 @@ afterAll(async () => {
   await mongo.stop();
   await mongoose.connection.close();
 });
+
+// globally scoped function. Only globally scoped in the test environment. Performs a signin and returns a cookie
+global.signin = async () => {
+  const email = 'test@test.com';
+  const password = 'password';
+
+  const reponse = await request(app)
+    .post('/api/users/sigup')
+    .send({ email, password })
+    .expect(201);
+
+  const cookie = reponse.get('Set-Cookie');
+  return cookie;
+};
