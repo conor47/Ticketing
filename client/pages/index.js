@@ -1,7 +1,7 @@
 import React from 'react';
 
-const app = () => {
-  return <h1>Langing page</h1>;
+const App = () => {
+  return <h1>Landing page</h1>;
 };
 
-export default app;
+export default App;
