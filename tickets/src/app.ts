@@ -6,6 +6,7 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
 import { NotFoundError, errorHandler } from '@clmicrotix/common';
+import { createTicketRouter } from './routes/new';
 
 const app = express();
 // traffic is being proxied to our application through ingress-nginx. Express by default will not trust this proxy so we must explicitly
@@ -21,6 +22,8 @@ app.use(
     secure: process.env.NODE_ENV !== 'test',
   })
 );
+
+app.use(createTicketRouter);
 
 app.all('*', async () => {
   throw new NotFoundError();
