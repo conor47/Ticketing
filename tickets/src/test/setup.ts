@@ -2,9 +2,10 @@ import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { app } from '../app';
+import jwt from 'jsonwebtoken';
 
 declare global {
-  var signin: () => Promise<string[]>;
+  var signin: () => string[];
 }
 
 let mongo: any;
@@ -33,16 +34,24 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-// globally scoped function. Only globally scoped in the test environment. Performs a signin and returns a cookie
-global.signin = async () => {
-  const email = 'test@test.com';
-  const password = 'password';
+// globally scoped function. Only globally scoped in the test environment. We must use a different method than used in the auth service.
+// Since we do not want to make cross service requests when in a testing environment we need to create our own cookie
+global.signin = () => {
+  // Build a JWT payload
+  const payload = { id: 'kajsdas', email: 'test@test.com' };
 
-  const reponse = await request(app)
-    .post('/api/users/signup')
-    .send({ email, password })
-    .expect(201);
+  // Create the JWT
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  const cookie = reponse.get('Set-Cookie');
-  return cookie;
+  // Build a session Object {jwt : my_jwt}
+  const session = { jwt: token };
+
+  // Turn session in JSON
+  const sessionJson = JSON.stringify(session);
+
+  // Encode JSON as Base64
+  const base64 = Buffer.from(sessionJson).toString('base64');
+
+  // Return a string thats a cookie with encoded data
+  return [`express:sess=${base64}`];
 };
