@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { currentUser } from '../middlewares/current-user';
+import { currentUser } from '@clmicrotix/common';
 
 // route for handling client requests to check if a user is authenticated
 

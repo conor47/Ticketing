@@ -9,8 +9,7 @@ import { currentUserRouter } from './routes/current-user';
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import { signupRouter } from './routes/signup';
-import { errorHandler } from './middlewares/error-handler';
-import { NotFoundError } from './errors/not-found-error';
+import { NotFoundError, errorHandler } from '@clmicrotix/common';
 
 const app = express();
 // traffic is being proxied to our application through ingress-nginx. Express by default will not trust this proxy so we must explicitly
