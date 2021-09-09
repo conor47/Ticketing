@@ -2,6 +2,8 @@ import nats from 'node-nats-streaming';
 
 // we create a client. A client is what will connect to our nats-streaming server and exchange information with it
 
+console.clear();
+
 const stan = nats.connect('ticketing', 'abc', {
   url: 'http://localhost:4222',
 });
