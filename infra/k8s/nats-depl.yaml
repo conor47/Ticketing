@@ -1,4 +1,4 @@
-apiVersion: apps/vi
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nats-depl
@@ -28,7 +28,6 @@ spec:
               '5s',
               '-hbf',
               '2',
-              '-',
               '-SD',
               '-cid',
               'ticketing',
