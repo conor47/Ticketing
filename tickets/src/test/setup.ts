@@ -38,7 +38,11 @@ afterAll(async () => {
 // Since we do not want to make cross service requests when in a testing environment we need to create our own cookie
 global.signin = () => {
   // Build a JWT payload
-  const payload = { id: 'kajsdas', email: 'test@test.com' };
+
+  const payload = {
+    id: new mongoose.Types.ObjectId().toHexString(),
+    email: 'test@test.com',
+  };
 
   // Create the JWT
   const token = jwt.sign(payload, process.env.JWT_KEY!);
