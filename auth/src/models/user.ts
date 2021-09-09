@@ -56,6 +56,7 @@ userSchema.pre('save', async function (done) {
   done();
 });
 
+// this function is really just to get typescript to perform typechecking on the passed attributes
 userSchema.statics.build = (attrs: UserAttrs) => {
   return new User(attrs);
 };

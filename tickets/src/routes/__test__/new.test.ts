@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { Ticket } from '../../../models/ticket';
 
 import { app } from '../../app';
 
@@ -49,4 +50,19 @@ it('returns an error if an invalid price is provided', async () => {
     .expect(400);
 });
 
-it('creates a ticket with valid inputs', async () => {});
+it('creates a ticket with valid inputs', async () => {
+  let tickets = await Ticket.find({});
+  expect(tickets.length === 0);
+
+  await request(app)
+    .post('/api/tickets')
+    .set('Cookie', global.signin())
+    .send({
+      title: 'asdasd',
+      price: 10,
+    })
+    .expect(201);
+
+  tickets = await Ticket.find({});
+  expect(tickets.length === 1);
+});
