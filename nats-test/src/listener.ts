@@ -10,16 +10,31 @@ const stan = nats.connect('ticketing', randomBytes(4).toString('hex'), {
 stan.on('connect', () => {
   console.log('Listener connected to nats');
 
+  //   a method to gracefully shutdown a client and its connection to nats streaming server
+  stan.on('close', () => {
+    console.log('nats connection closed');
+    process.exit();
+  });
+
   //   queue groups can be created inside a topic to prevent event duplication among replica services. Nats will choose just one member of
   //   the group to send the event to.
 
   //   we must build an options object and pass it in to the subscription. Setting manual acknowledgement mode to true allows us to
   //   manually verify that work has been carried out successfully. If some failure occurs we may want to receive the event again to re-process
   // it
-  const options = stan.subscriptionOptions().setManualAckMode(true);
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+    // allows us to re-deliver all messages to a listener
+    .setDeliverAllAvailable()
+    .setDurableName('order-service');
+  // when we create a durable subscription nats will keep track of any durable subscriptions in a channel. It will track which events each
+  // durable subscription has processed. Nats will track events that haven't been processed by each durable subscription, meaning say
+  // a service comes back online nats knows to re-send any missed events
+
   const subscription = stan.subscribe(
     'ticket:created',
-    'orders-service-queue-group',
+    'queue-group-name',
     options
   );
 
@@ -34,3 +49,6 @@ stan.on('connect', () => {
     msg.ack();
   });
 });
+
+process.on('SIGINT', () => stan.close());
+process.on('SIGTERM', () => stan.close());
