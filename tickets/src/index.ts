@@ -19,6 +19,7 @@ const start = async () => {
   // connect to mongo instance
   try {
     await natsWrapper.connect('ticketing', 'qlwnasx', 'http://nats-srv:4222');
+
     await mongoose.connect(process.env.MONGO_URI);
     console.log('connecting to DB');
   } catch (error) {

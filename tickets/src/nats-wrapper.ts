@@ -14,6 +14,7 @@ class NatsWrapper {
   // cluster id is defined in the nats depl file. It's passed as an arguement to the nats container
   connect(clusterId: string, clientId: string, url: string) {
     this._client = nats.connect(clusterId, clientId, { url });
+    // logic for exiting our nats process
     natsWrapper.client.on('close', () => {
       console.log('NATS connection was closed');
       process.exit();
