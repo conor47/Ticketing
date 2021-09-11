@@ -4,16 +4,29 @@ import nats, { Stan } from 'node-nats-streaming';
 class NatsWrapper {
   private _client?: Stan;
 
+  get client() {
+    if (!this._client) {
+      throw new Error('Cannot access nats client before connecting');
+    }
+    return this._client;
+  }
+
   // cluster id is defined in the nats depl file. It's passed as an arguement to the nats container
   connect(clusterId: string, clientId: string, url: string) {
     this._client = nats.connect(clusterId, clientId, { url });
+    natsWrapper.client.on('close', () => {
+      console.log('NATS connection was closed');
+      process.exit();
+    });
+    process.on('SIGTERM', () => natsWrapper.client.close());
+    process.on('SIGINT', () => natsWrapper.client.close());
 
     return new Promise<void>((resolve, reject) => {
-      this._client!.on('connect', () => {
+      this.client.on('connect', () => {
         console.log('Connected to NATS');
         resolve();
       });
-      this._client!.on('error', (err) => {
+      this.client.on('error', (err) => {
         reject(err);
       });
     });

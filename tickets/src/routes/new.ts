@@ -4,6 +4,7 @@ import { body } from 'express-validator';
 import { requireAuth, validateRequest } from '@clmicrotix/common';
 import { Ticket } from '../../models/ticket';
 import { TicketCreatePublisher } from '../events/publishers/ticket-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -29,12 +30,13 @@ router.post(
 
     // passing in the values from the ticket is preferable as opposed to the values from the request as the values returned from the build method
     // may have been sanitised and modified.
-    // new TicketCreatePublisher(client).publish({
-    //   id: ticket.id,
-    //   title: ticket.title,
-    //   price:ticket.price,
-    //   userId: ticket.userId,
-    // });
+
+    await new TicketCreatePublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     res.status(201).send(ticket);
   }
