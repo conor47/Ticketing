@@ -20,34 +20,10 @@ stan.on('connect', () => {
   //   the group to send the event to.
 
   //   we must build an options object and pass it in to the subscription. Setting manual acknowledgement mode to true allows us to
-  //   manually verify that work has been carried out successfully. If some failure occurs we may want to receive the event again to re-process
-  // it
-  const options = stan
-    .subscriptionOptions()
-    .setManualAckMode(true)
-    // allows us to re-deliver all messages to a listener
-    .setDeliverAllAvailable()
-    .setDurableName('order-service');
-  // when we create a durable subscription nats will keep track of any durable subscriptions in a channel. It will track which events each
-  // durable subscription has processed. Nats will track events that haven't been processed by each durable subscription, meaning say
-  // a service comes back online nats knows to re-send any missed events
+  //   manually verify that work has been carried out successfully. If some failure occurs we may want to receive the event again to
+  // re process it
 
-  const subscription = stan.subscribe(
-    'ticket:created',
-    'queue-group-name',
-    options
-  );
-
-  subscription.on('message', (msg: Message) => {
-    const data = msg.getData();
-
-    if (typeof data === 'string') {
-      console.log(`received event #${msg.getSequence()}, with data ${data}`);
-    }
-
-    // we manually acknowledge the event, telling nats not to re-emit the event anymore
-    msg.ack();
-  });
+  new TicketCreatedListener(stan).listen();
 });
 
 process.on('SIGINT', () => stan.close());
@@ -65,12 +41,18 @@ abstract class Listener {
   }
 
   subscriptionOptions() {
-    return this.client
-      .subscriptionOptions()
-      .setDeliverAllAvailable()
-      .setManualAckMode(true)
-      .setAckWait(this.ackWait)
-      .setDurableName(this.queueGroupName);
+    return (
+      this.client
+        .subscriptionOptions()
+        // allows us to re-deliver all messages to a listener
+        .setDeliverAllAvailable()
+        .setManualAckMode(true)
+        .setAckWait(this.ackWait)
+        .setDurableName(this.queueGroupName)
+      // when we create a durable subscription nats will keep track of any durable subscriptions in a channel. It will track which events each
+      // durable subscription has processed. Nats will track events that haven't been processed by each durable subscription, meaning say
+      // a service comes back online nats knows to re-send any missed events
+    );
   }
 
   listen() {
@@ -93,5 +75,16 @@ abstract class Listener {
     return typeof data === 'string'
       ? JSON.parse(data)
       : JSON.parse(data.toString('utf8'));
+  }
+}
+
+class TicketCreatedListener extends Listener {
+  subject = 'ticket:created';
+  queueGroupName = 'payments-service';
+
+  onMessage(data: any, msg: Message) {
+    console.log(`event data !`, data);
+    // we manually acknowledge the event, telling nats not to re-emit the event anymore
+    msg.ack();
   }
 }
