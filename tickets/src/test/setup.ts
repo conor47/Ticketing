@@ -8,6 +8,11 @@ declare global {
   var signin: () => string[];
 }
 
+// instead of importing the real nats wrapper Jest will now import our mock version defined in __mocks__
+// This mock is necessary as our routes are using a nats client for event publishing. In testing we do not want to have to depend
+// on there being an available nats client and so we mock one with only the bare necessities
+jest.mock('../nats-wrapper');
+
 let mongo: any;
 // Hook function that runs before all of our tests
 beforeAll(async () => {
