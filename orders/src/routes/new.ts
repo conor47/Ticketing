@@ -6,13 +6,16 @@ import {
   NotFoundError,
   requireAuth,
   validateRequest,
-  OrderStatus,
   BadRequestError,
+  OrderStatus,
 } from '@clmicrotix/common';
 import { Ticket } from '../models/ticket';
 import { Order } from '../models/order';
 
 const router = express.Router();
+
+// for setting an orders expiration time. We are currently setting it to 15 minutes
+const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   '/api/orders',
@@ -35,29 +38,29 @@ router.post(
       throw new NotFoundError();
     }
     // ensure the ticket is not already reserved
-    const existingOrder = await Order.findOne({
-      ticket: ,
-      status: {
-        $in: [
-          OrderStatus.Complete,
-          OrderStatus.AwaitingPayment,
-          OrderStatus.Created,
-        ],
-      },
-    });
 
-    if (existingOrder) {
+    const isReserved = await ticket.isReserved();
+    if (isReserved) {
       throw new BadRequestError('Ticket is already reserved');
     }
 
     // Calculatedan expiration data for order
+    const expiration = new Date();
+    expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
 
     // build the order and save to database
+    const order = Order.build({
+      userId: req.currentUser!.id,
+      status: OrderStatus.Created,
+      expiresAt: expiration,
+      ticket,
+    });
+
+    await order.save();
 
     // publish an order:created event
 
-    res.send({});
+    res.status(201).send(order);
   }
 );
-
 export { router as newOrderRouter };

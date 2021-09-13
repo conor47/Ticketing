@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import { Order, OrderStatus } from './order';
+
 interface TicketAddrs {
   title: string;
   price: number;
@@ -8,6 +10,7 @@ interface TicketAddrs {
 export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
+  isReserved(): Promise<boolean>;
 }
 
 interface TicketModel extends mongoose.Model<TicketDoc> {
@@ -38,6 +41,25 @@ const ticketSchema = new mongoose.Schema(
 
 ticketSchema.statics.build = (attrs: TicketAddrs) => {
   return new Ticket(attrs);
+};
+
+// this is how we add methods to a document.
+// Method for checking whether a given ticket is reserved
+ticketSchema.methods.isReserved = async function () {
+  // this will === the docuement we just called isReserved() on
+  const existingOrder = await Order.findOne({
+    ticket: this.id,
+    status: {
+      $in: [
+        OrderStatus.Complete,
+        //@ts-ignore
+        OrderStatus.AwaitingPayment,
+        //@ts-ignore
+        OrderStatus.Created,
+      ],
+    },
+  });
+  return !!existingOrder;
 };
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
