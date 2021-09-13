@@ -33,7 +33,7 @@ router.post(
     const { ticketId } = req.body;
 
     // find ticket that the user is trying to order
-    const ticket = await Ticket.findById({ ticketId });
+    const ticket = await Ticket.findById(ticketId);
     if (!ticket) {
       throw new NotFoundError();
     }
