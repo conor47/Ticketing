@@ -15,8 +15,11 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   async onMessage(data: TicketCreatedEvent['data'], msg: Message) {
     //   the logic we want to perform here is to save a copy of the ticket to our local tickets collection. This is a typical example
     // of cross service data duplication. We can now retrieve ticket information locally instead of having to make a cross-service request
-    const { title, price } = data;
+    const { title, price, id } = data;
     const ticket = Ticket.build({
+      // we require the id so that we can locate and identify specific tickets in the future. If we allow mongo to automatically create the id
+      // the ids will not match.
+      id,
       title,
       price,
     });
