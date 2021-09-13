@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.post(
+router.delete(
   '/api/orders/:orderId',
   requireAuth,
   async (req: Request, res: Response) => {
@@ -20,13 +20,16 @@ router.post(
       throw new NotFoundError();
     }
 
-    if (order.id !== req.currentUser!.id) {
+    if (order.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
     }
 
     order.status = OrderStatus.Cancelled;
+    await order.save();
 
-    res.send(order);
+    // publish an order cancelled event
+
+    res.status(204).send(order);
   }
 );
 
