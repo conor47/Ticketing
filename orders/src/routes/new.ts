@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import mongoose from 'mongoose';
 
+import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
+
 import {
   NotFoundError,
   requireAuth,
@@ -59,6 +62,18 @@ router.post(
     await order.save();
 
     // publish an order:created event
+    new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      status: order.status,
+      userId: order.userId,
+      // we must manually convert the data object into a timezone agnostic string. The dates own to string method will include a timezone
+      // which is not fit for use with expiration times
+      expiresAt: order.expiresAt.toISOString(),
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
 
     res.status(201).send(order);
   }
