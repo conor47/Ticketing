@@ -46,6 +46,9 @@ it('creates and saves a ticket', async () => {
 });
 
 it('acknowledges the message', async () => {
+  const { data, listener, message } = await setup();
   // call the onMessage function with the data object and message object
+  await listener.onMessage(data, message);
   // make assertions
+  expect(message.ack).toHaveBeenCalled();
 });
