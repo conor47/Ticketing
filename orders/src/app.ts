@@ -1,4 +1,4 @@
-// The purpose of this file is for configuring our express server. The server is not started herer
+// The purpose of this file is for configuring our express server. The server is not started here
 
 import express from 'express';
 import 'express-async-errors';
