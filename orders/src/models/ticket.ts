@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { Order, OrderStatus } from './order';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 interface TicketAddrs {
   title: string;
@@ -11,6 +12,7 @@ interface TicketAddrs {
 export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
+  version: number;
   isReserved(): Promise<boolean>;
 }
 
@@ -47,6 +49,8 @@ ticketSchema.statics.build = (attrs: TicketAddrs) => {
     price: attrs.price,
   });
 };
+ticketSchema.set('versionKey', 'version');
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 // this is how we add methods to a document.
 // Method for checking whether a given ticket is reserved

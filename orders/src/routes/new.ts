@@ -66,6 +66,7 @@ router.post(
       id: order.id,
       status: order.status,
       userId: order.userId,
+      version: order.version,
       // we must manually convert the data object into a timezone agnostic string. The dates own to string method will include a timezone
       // which is not fit for use with expiration times
       expiresAt: order.expiresAt.toISOString(),
