@@ -5,6 +5,7 @@ import { Message } from 'node-nats-streaming';
 import { TicketUpdatedListener } from '../ticket-updated-listener';
 import { natsWrapper } from '../../../nats-wrapper';
 import { Ticket } from '../../../models/ticket';
+import { isExportDeclaration } from 'typescript';
 
 const setup = async () => {
   // create an instance of the listener
@@ -61,4 +62,16 @@ it('acknowledges to message', async () => {
   await listener.onMessage(data, message);
 
   expect(message.ack).toHaveBeenCalled();
+});
+
+it('does not call ack if the event has an incorrect version number', async () => {
+  const { message, data, listener, ticket } = await setup();
+
+  data.version = 10;
+
+  try {
+    await listener.onMessage(data, message);
+  } catch (error) {}
+
+  expect(message.ack).not.toHaveBeenCalled();
 });
