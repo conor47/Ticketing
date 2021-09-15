@@ -18,7 +18,7 @@ import { Order } from '../models/order';
 const router = express.Router();
 
 // for setting an orders expiration time. We are currently setting it to 15 minutes
-const EXPIRATION_WINDOW_SECONDS = 15 * 60;
+const EXPIRATION_WINDOW_SECONDS = 1 * 60;
 
 router.post(
   '/api/orders',

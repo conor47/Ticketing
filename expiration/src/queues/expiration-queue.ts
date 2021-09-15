@@ -11,7 +11,7 @@ const expirationQueue = new Queue<Payload>('order:expiration', {
   },
 });
 
-// processing functions for jobs in the queue
+// processing functions for jobs in the
 expirationQueue.process(async (job) => {
   console.log(
     'I want to publish an expiration complete event for orderId:',
