@@ -22,8 +22,9 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
 
     // save the ticket
     await ticket.save();
-    // publish a ticket updated event
-    new TicketUpdatedPublisher(this.client).publish({
+    // publish a ticket updated event. The access modifier on the listener base class has been changed from private to protected meaning it
+    // can be accessed directly in sub classes
+    await new TicketUpdatedPublisher(this.client).publish({
       id: ticket.id,
       price: ticket.price,
       title: ticket.title,
