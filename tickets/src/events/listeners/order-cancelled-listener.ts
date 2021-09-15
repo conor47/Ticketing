@@ -1,5 +1,6 @@
 import { Listener, Subjects } from '@clmicrotix/common';
 import { OrderCancelledEvent } from '@clmicrotix/common';
+
 import { queueGroupName } from './queue-group-name';
 import { Message } from 'node-nats-streaming';
 import { Ticket } from '../../../models/ticket';

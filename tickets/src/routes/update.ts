@@ -6,6 +6,7 @@ import {
   NotFoundError,
   requireAuth,
   NotAuthorizedError,
+  BadRequestError,
 } from '@clmicrotix/common';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
@@ -28,6 +29,11 @@ router.put(
 
     if (!ticket) {
       throw new NotFoundError();
+    }
+
+    // if there is an orderId we know that the ticket has some order on it and so should be locked
+    if (ticket.orderId) {
+      throw new BadRequestError('Ticket is reserved');
     }
 
     if (ticket.userId !== req.currentUser!.id) {
