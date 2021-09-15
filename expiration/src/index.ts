@@ -1,4 +1,5 @@
 import { natsWrapper } from './nats-wrapper';
+import { OrderCreatedListener } from './events/listeners/order-created-listener';
 
 const start = async () => {
   // check to ensure that the necessary environment variables have been set. We perform this check here instead of eg in a route , as
@@ -27,6 +28,8 @@ const start = async () => {
     });
     process.on('SIGTERM', () => natsWrapper.client.close());
     process.on('SIGINT', () => natsWrapper.client.close());
+
+    new OrderCreatedListener(natsWrapper.client).listen();
   } catch (err) {
     console.log(err);
   }
