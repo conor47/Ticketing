@@ -10,7 +10,7 @@ import {
 } from '@clmicrotix/common';
 
 import { Order } from '../models/order';
-import { idText } from 'typescript';
+import { stripe } from '../stripe';
 
 const router = express.Router();
 
@@ -36,9 +36,15 @@ router.post(
     }
 
     // check that the order is not already cancelled
-    if ((order.status = OrderStatus.Cancelled)) {
+    if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestError('Order is expired. Payment not allowed.');
     }
+
+    await stripe.charges.create({
+      currency: 'usd',
+      amount: order.price * 100,
+      source: token,
+    });
 
     res.send({ succes: true });
   }
