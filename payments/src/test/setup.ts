@@ -5,7 +5,7 @@ import { app } from '../app';
 import jwt from 'jsonwebtoken';
 
 declare global {
-  var signin: () => string[];
+  var signin: (id?: string) => string[];
 }
 
 // instead of importing the real nats wrapper Jest will now import our mock version defined in __mocks__
@@ -42,11 +42,11 @@ afterAll(async () => {
 
 // globally scoped function. Only globally scoped in the test environment. We must use a different method than used in the auth service.
 // Since we do not want to make cross service requests when in a testing environment we need to create our own cookie
-global.signin = () => {
+global.signin = (id?: string) => {
   // Build a JWT payload
 
   const payload = {
-    id: new mongoose.Types.ObjectId().toHexString(),
+    id: id || new mongoose.Types.ObjectId().toHexString(),
     email: 'test@test.com',
   };
 
