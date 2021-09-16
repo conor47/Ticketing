@@ -3,8 +3,9 @@ import { app } from '../../app';
 import mongoose from 'mongoose';
 import { Order } from '../../models/order';
 import { OrderStatus } from '@clmicrotix/common';
+import { stripe } from '../../stripe';
 
-jest.mock('../../stripe');
+// jest.mock('../../stripe');
 
 it('returns a 404 when purchasing order that does not exist', async () => {
   await request(app)
@@ -71,8 +72,17 @@ it('returns a 204 with valid inputs', async () => {
   });
   await order.save();
 
-  await request(app).post('/api/payments').set('Cookie', global.signin()).send({
-    token: 'tok_visa',
-    orderId: order.id,
-  });
+  await request(app)
+    .post('/api/payments')
+    .set('Cookie', global.signin(userId))
+    .send({
+      token: 'tok_visa',
+      orderId: order.id,
+    })
+    .expect(201);
+
+  const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
+  expect(chargeOptions.source).toEqual('tok_visa');
+  expect(chargeOptions.amount).toEqual(50 * 100);
+  expect(chargeOptions.currency).toEqual('usd');
 });
