@@ -22,7 +22,7 @@ app.use(
     signed: false,
     // when jest runs tests it sets the NODE_ENV environment variable to test. We do this check as we want to be able to make
     // http requests as opposed to http requests when testing
-    secure: process.env.NODE_ENV !== 'test',
+    secure: false,
   })
 );
 app.use(currentUser);
