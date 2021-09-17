@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { app } from './app';
 
 const start = async () => {
-  console.log('starting ...');
+  console.log('starting ....');
 
   // check to ensure that the necessary environment variables have been set. We perform this check here instead of eg in a route , as
   // these secrets are crtical to the functioning of our application
