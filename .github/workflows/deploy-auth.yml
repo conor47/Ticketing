@@ -13,9 +13,8 @@ jobs:
       - uses : actions/checkout@v2
       - run : cd auth && docker build -t conorl47/auth .
       - name: Login to DockerHub Registry
-        run: 
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-        env:
-          $DOCKER_USER: ${{ secrets.DOCKERHUB.USERNAME }}
-          $DOCKER_PASSWORD: ${{ secrets.DOCKERHUB.PASSWORD }}
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - run : docker push conorl47/auth
