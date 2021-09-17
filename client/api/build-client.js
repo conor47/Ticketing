@@ -12,7 +12,7 @@ const buildAxios = ({ req }) => {
 
     // we specify the service and then the namespace
     return axios.create({
-      baseURL: 'http://www.conor-microservice-prod.xyz/',
+      baseURL: 'http://www.conor-microservice-prod.xyz',
       headers: req.headers,
     });
   } else {
