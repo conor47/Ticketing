@@ -12,7 +12,7 @@ import { PaymentCreatedListener } from './events/listeners/payment-created-liste
 const start = async () => {
   // check to ensure that the necessary environment variables have been set. We perform this check here instead of eg in a route , as
   // these secrets are crtical to the functioning of our application
-  console.log('starting ...');
+  console.log('starting ....');
 
   if (!process.env.JWT_KEY) {
     throw new Error('JWT_KEY key must be defined');
