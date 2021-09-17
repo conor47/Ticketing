@@ -16,6 +16,6 @@ jobs:
         run: 
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         env:
-          DOCKER_USER: ${{ secrets.DOCKERHUB.USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB.PASSWORD }}
+          $DOCKER_USER: ${{ secrets.DOCKERHUB.USERNAME }}
+          $DOCKER_PASSWORD: ${{ secrets.DOCKERHUB.PASSWORD }}
       - run : docker push conorl47/auth
