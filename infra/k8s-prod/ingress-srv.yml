@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   rules:
-    - host: ticketing.dev
+    - host: www.conor-microservice-prod.xyz
       http:
         paths:
           # ingress attemps to match this array of paths in order. The order is important. The most general should be last
