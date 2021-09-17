@@ -13,7 +13,7 @@ const buildAxios = ({ req }) => {
     // we specify the service and then the namespace
     return axios.create({
       baseURL:
-        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
+        'http://www.conor-microservice-prod.xyz/',
       headers: req.headers,
     });
   } else {
@@ -25,3 +25,7 @@ const buildAxios = ({ req }) => {
 };
 
 export default buildAxios;
+
+
+
+http://ingress-nginx-controller.ingress-nginx.svc.cluster.local
