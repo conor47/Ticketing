@@ -10,19 +10,11 @@ spec:
     - host: www.conor-microservice-prod.xyz
       http:
         paths:
-          # ingress attemps to match this array of paths in order. The order is important. The most general should be last
           - path: /api/users/?(.*)
             pathType: Prefix
             backend:
               service:
                 name: auth-srv
-                port:
-                  number: 3000
-          - path: /api/payments/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: payments-srv
                 port:
                   number: 3000
           - path: /api/tickets/?(.*)
@@ -37,6 +29,13 @@ spec:
             backend:
               service:
                 name: orders-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: payments-srv
                 port:
                   number: 3000
           - path: /?(.*)
@@ -54,7 +53,7 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
     service.beta.kubernetes.io/do-loadbalancer-hostname: 'www.conor-microservice-prod.xyz'
   labels:
-   helm.sh/chart: ingress-nginx-4.0.1
+    helm.sh/chart: ingress-nginx-4.0.1
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/version: 1.0.0
